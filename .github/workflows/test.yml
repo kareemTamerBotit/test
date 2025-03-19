@@ -26,27 +26,3 @@ jobs:
         with:
           name: node-app
           path: release.zip
-
-      - name: Delete current artifact
-        if: always()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId
-            });
-            
-            const nodeAppArtifact = artifacts.data.artifacts.find(artifact => artifact.name === "node-app");
-            
-            if (nodeAppArtifact) {
-              await github.rest.actions.deleteArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: nodeAppArtifact.id
-              });
-              console.log(`Successfully deleted artifact: ${nodeAppArtifact.name}`);
-            } else {
-              console.log('No "node-app" artifact found to delete');
-            }
