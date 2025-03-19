@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  actions: write  # Required to delete artifacts
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,19 +38,19 @@ jobs:
 
       - name: Delete Old Artifacts
         uses: actions/github-script@v6
-        id: artifact
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const res = await github.rest.actions.listArtifactsForRepo({
+            const { data: { artifacts } } = await github.rest.actions.listArtifactsForRepo({
               owner: context.repo.owner,
-              repo: context.repo.repo,
-            })
+              repo: context.repo.repo
+            });
 
-            res.data.artifacts
-            .forEach(({ id }) => {
-            github.rest.actions.deleteArtifact({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              artifact_id: id,
-            })
-          })
+            for (const artifact of artifacts) {
+              await github.rest.actions.deleteArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id
+              });
+              console.log(`Deleted artifact: ${artifact.name}`);
+            }
