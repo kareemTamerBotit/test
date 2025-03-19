@@ -26,3 +26,7 @@ jobs:
         with:
           name: node-app
           path: release.zip
+                - name: Delete artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: node-app
