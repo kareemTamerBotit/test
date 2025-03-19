@@ -33,8 +33,21 @@ jobs:
           name: node-app
           path: release.zip
 
-      - name: Delete artifact
-        uses: geekyeggo/delete-artifact@v5
+      - name: Delete Old Artifacts
+        uses: actions/github-script@v6
+        id: artifact
         with:
-          name: node-app
-          failOnError: false
+          script: |
+            const res = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+
+            res.data.artifacts
+            .forEach(({ id }) => {
+            github.rest.actions.deleteArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: id,
+            })
+          })
