@@ -33,8 +33,8 @@ jobs:
           name: node-app
           path: release.zip
 
-      # - name: Delete artifact
-      #   uses: geekyeggo/delete-artifact@v5
-      #   with:
-      #     name: node-app
-      #     failOnError: false
+      - name: Delete artifact
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: node-app
+          failOnError: false
